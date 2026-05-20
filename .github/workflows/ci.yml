@@ -4,7 +4,10 @@ on:
   pull_request:
     branches: [main, develop]
   push:
-    branches: [develop]
+    branches: [main, develop]
+
+env:
+  CI: true
 
 jobs:
   lint-and-typecheck:
