@@ -1,0 +1,19 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #f9fafb; color: #111827; }
+a { color: inherit; text-decoration: none; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+th { background: #f3f4f6; font-weight: 600; color: #374151; }
+tr:hover td { background: #f9fafb; }
+input, select { border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 12px; font-size: 14px; outline: none; width: 100%; }
+input:focus, select:focus { border-color: #3d6b2e; box-shadow: 0 0 0 3px rgba(61,107,46,0.15); }
+button { cursor: pointer; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; padding: 8px 16px; transition: opacity 0.15s; }
+button:hover { opacity: 0.85; }
+.btn-primary { background: #3d6b2e; color: #fff; }
+.btn-danger { background: #ef4444; color: #fff; }
+.btn-ghost { background: transparent; color: #6b7280; border: 1px solid #d1d5db; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+.badge-green { background: #dcfce7; color: #166534; }
+.badge-yellow { background: #fef9c3; color: #854d0e; }
+.badge-gray { background: #f3f4f6; color: #374151; }
+
