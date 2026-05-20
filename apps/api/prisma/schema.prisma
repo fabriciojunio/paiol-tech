@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Producer {
+  id            String   @id @default(uuid())
+  phone         String   @unique
+  name          String?
+  cpfCnpj       String?
+  cooperativeId String?
+  plan          String   @default("basic")
+  createdAt     DateTime @default(now())
+
+  cooperative   Cooperative?          @relation(fields: [cooperativeId], references: [id])
+  debts         Debt[]
+  alerts        Alert[]
+  sessions      AuthSession[]
+  openFinance   OpenFinanceConnection[]
+  auditLogs     AuditLog[]
+
+  @@map("producers")
+}
+
+model Debt {
+  id             String   @id @default(uuid())
+  producerId     String
+  creditor       String
+  amount         Decimal  @db.Decimal(15, 2)
+  dueDate        DateTime @db.Date
+  description    String?
+  source         String
+  status         String   @default("PENDING")
+  bankCode       String?
+  contractNumber String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  producer Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+  alerts   Alert[]
+
+  @@index([producerId])
+  @@index([dueDate])
+  @@index([producerId, status])
+  @@map("debts")
+}
+
+model Alert {
+  id         String    @id @default(uuid())
+  producerId String
+  debtId     String
+  type       String    @default("WHATSAPP")
+  daysBefore Int       @default(3)
+  sentAt     DateTime?
+  status     String    @default("PENDING")
+  createdAt  DateTime  @default(now())
+
+  producer Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+  debt     Debt     @relation(fields: [debtId], references: [id], onDelete: Cascade)
+
+  @@index([producerId])
+  @@index([status, sentAt])
+  @@map("alerts")
+}
+
+model Cooperative {
+  id           String   @id @default(uuid())
+  name         String
+  cnpj         String   @unique
+  plan         String?
+  maxAssociates Int?
+  monthlyPrice Decimal? @db.Decimal(10, 2)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  producers Producer[]
+
+  @@map("cooperatives")
+}
+
+model OpenFinanceConnection {
+  id         String    @id @default(uuid())
+  producerId String
+  bankCode   String
+  bankName   String    @default("")
+  consentId  String?
+  status     String    @default("ACTIVE")
+  lastSyncAt DateTime?
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  producer Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+
+  @@unique([producerId, bankCode])
+  @@index([producerId])
+  @@map("open_finance_connections")
+}
+
+model AuthSession {
+  id           String   @id @default(uuid())
+  producerId   String
+  refreshToken String   @unique
+  expiresAt    DateTime
+  deviceInfo   Json?
+  createdAt    DateTime @default(now())
+
+  producer Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+
+  @@index([producerId])
+  @@map("auth_sessions")
+}
+
+model OtpSession {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+  @@map("otp_sessions")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  producerId String?
+  action     String
+  resource   String
+  resourceId String?
+  metadata   Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  producer Producer? @relation(fields: [producerId], references: [id], onDelete: SetNull)
+
+  @@index([producerId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

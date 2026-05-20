@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false,
+    "paths": {
+      "@paiol/types": ["../../packages/types/src/index.ts"],
+      "@paiol/validators": ["../../packages/validators/src/index.ts"],
+      "@paiol/utils": ["../../packages/utils/src/index.ts"],
+      "@domain/*": ["./src/domain/*"],
+      "@application/*": ["./src/application/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@presentation/*": ["./src/presentation/*"]
+    }
+  },
+  "include": ["src/**/*", "../../packages/types/src/**/*", "../../packages/validators/src/**/*", "../../packages/utils/src/**/*"],
+  "exclude": ["node_modules", "dist", "test"]
+}
