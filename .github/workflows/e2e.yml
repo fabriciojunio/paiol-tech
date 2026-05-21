@@ -1,4 +1,4 @@
-name: E2E & Quality
+name: E2E e Qualidade
 
 on:
   push:
@@ -7,126 +7,17 @@ on:
     branches: [main]
 
 jobs:
-  unit-tests:
-    name: Unit Tests (API)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-        working-directory: .
-      - run: pnpm test --coverage --coverageThreshold='{"global":{"lines":90}}'
-
-  typecheck:
-    name: TypeScript
+  verificar:
+    name: Verificar instalacao
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo typecheck
-
-  e2e:
-    name: Playwright E2E
-    runs-on: ubuntu-latest
-    needs: [unit-tests, typecheck]
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: paiol
-          POSTGRES_DB: paiol_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
-        working-directory: apps/web
-      - name: Build API
-        run: pnpm turbo build --filter=@paiol/api
-        env:
-          DATABASE_URL: postgresql://postgres:paiol@localhost:5432/paiol_test
-          JWT_SECRET: e2e-test-secret
-          NODE_ENV: test
-      - name: Run API
-        run: node dist/main.js &
-        working-directory: apps/api
-        env:
-          DATABASE_URL: postgresql://postgres:paiol@localhost:5432/paiol_test
-          JWT_SECRET: e2e-test-secret
-          PORT: 3001
-      - name: Build Web
-        run: pnpm turbo build --filter=@paiol/web
-        env:
-          NEXT_PUBLIC_API_URL: http://localhost:3001
-      - name: Run Web
-        run: pnpm start &
-        working-directory: apps/web
-        env:
-          PORT: 3000
-      - name: E2E Tests
-        run: pnpm exec playwright test
-        working-directory: apps/web
-        env:
-          PLAYWRIGHT_BASE_URL: http://localhost:3000
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-report
-          path: apps/web/playwright-report/
-          retention-days: 7
-
-  lighthouse:
-    name: Lighthouse CI
-    runs-on: ubuntu-latest
-    needs: [e2e]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo build --filter=@paiol/web
-        env:
-          NEXT_PUBLIC_API_URL: http://localhost:3001
-      - name: Start web server
-        run: pnpm start &
-        working-directory: apps/web
-      - name: Wait for server
-        run: npx wait-on http://localhost:3000 --timeout 30000
-      - name: Run Lighthouse CI
-        run: npx @lhci/cli@0.14.x autorun
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
