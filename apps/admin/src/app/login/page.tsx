@@ -45,7 +45,13 @@ export default function LoginPage() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: 40, width: 360, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: '#3d6b2e', marginBottom: 8 }}>🌾 Paiol Admin</h1>
-        <p style={{ color: '#6b7280', marginBottom: 28, fontSize: 14 }}>Acesso restrito a administradores</p>
+        <p style={{ color: '#6b7280', marginBottom: 20, fontSize: 14 }}>Acesso restrito a administradores</p>
+
+        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '12px 14px', marginBottom: 24 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: '#166534', marginBottom: 6, margin: '0 0 6px 0' }}>Credenciais de demonstração</p>
+          <p style={{ fontSize: 12, color: '#15803d', margin: '0 0 3px 0', fontFamily: 'monospace' }}>Usuário: <strong>admin</strong></p>
+          <p style={{ fontSize: 12, color: '#15803d', margin: 0, fontFamily: 'monospace' }}>Senha: <strong>admin1234</strong></p>
+        </div>
 
         <form onSubmit={(e) => void handleSubmit(e)}>
           <div style={{ marginBottom: 16 }}>
