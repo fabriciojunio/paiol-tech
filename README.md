@@ -5,6 +5,10 @@
 SaaS de gestão de dívidas rurais para produtores brasileiros.
 Login sem senha · Alertas no WhatsApp · Open Finance · Offline-first
 
+**Deploy em produção:**
+- App Web (usuários): [paiol-tech.vercel.app](https://paiol-tech.vercel.app)
+- Painel Admin: [admin-psi-five-89.vercel.app](https://admin-psi-five-89.vercel.app) — usuário: `admin` · senha: `admin1234`
+
 ---
 
 ## Stack
