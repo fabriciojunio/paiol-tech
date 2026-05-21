@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
@@ -11,6 +11,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleDemo = useCallback(() => {
+    localStorage.setItem('admin_token', 'demo-token');
+    router.push('/');
+  }, [router]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -81,6 +86,32 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
+
+        <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <p style={{ margin: 0, fontSize: 12, color: '#9ca3af' }}>Quer explorar sem credenciais?</p>
+          <button
+            type="button"
+            onClick={handleDemo}
+            style={{
+              width: '100%',
+              padding: '10px 0',
+              fontSize: 14,
+              fontWeight: 600,
+              background: '#f0fdf4',
+              color: '#166534',
+              border: '1px solid #bbf7d0',
+              borderRadius: 8,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            <span>👤</span>
+            <span>Entrar como demonstração</span>
+          </button>
+        </div>
       </div>
     </div>
   );
