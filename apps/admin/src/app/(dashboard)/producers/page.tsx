@@ -5,6 +5,21 @@ import type { Producer } from '@paiol/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
+const DEMO_PRODUCERS: Producer[] = [
+  { id: '1', phone: '(65) 99801-2233', name: 'João Carlos Mendonça', cpfCnpj: '423.891.072-15', plan: 'professional', createdAt: new Date('2024-03-10') },
+  { id: '2', phone: '(65) 98745-6601', name: 'Maria Aparecida Souza', cpfCnpj: '781.234.560-09', plan: 'basic', createdAt: new Date('2024-04-02') },
+  { id: '3', phone: '(66) 99312-4478', name: 'Agropecuária Cerrado Ltda', cpfCnpj: '12.345.678/0001-90', plan: 'premium', createdAt: new Date('2024-01-15') },
+  { id: '4', phone: '(65) 99021-8833', name: 'Pedro Henrique Lima', cpfCnpj: '567.890.123-44', plan: 'basic', createdAt: new Date('2024-04-18') },
+  { id: '5', phone: '(66) 98634-5512', name: 'Fazenda Bom Retiro ME', cpfCnpj: '98.765.432/0001-11', plan: 'professional', createdAt: new Date('2024-02-28') },
+  { id: '6', phone: '(65) 99741-0099', name: 'Antônio Ferreira dos Santos', cpfCnpj: '234.567.890-22', plan: 'basic', createdAt: new Date('2024-05-01') },
+  { id: '7', phone: '(66) 99988-3344', name: 'Cooperativa Mato Verde', cpfCnpj: '45.678.901/0001-33', plan: 'premium', createdAt: new Date('2023-11-20') },
+  { id: '8', phone: '(65) 98812-7766', name: 'Luzia Regina Pereira', cpfCnpj: '890.123.456-77', plan: 'basic', createdAt: new Date('2024-05-10') },
+];
+
+function isDemo() {
+  return typeof window !== 'undefined' && localStorage.getItem('admin_token') === 'demo-token';
+}
+
 export default function ProducersPage() {
   const [producers, setProducers] = useState<Producer[]>([]);
   const [total, setTotal] = useState(0);
@@ -12,6 +27,12 @@ export default function ProducersPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (isDemo()) {
+      setProducers(DEMO_PRODUCERS);
+      setTotal(DEMO_PRODUCERS.length);
+      setIsLoading(false);
+      return;
+    }
     const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
     setIsLoading(true);
     fetch(`${API_URL}/admin/producers?page=${page}&limit=20`, {
