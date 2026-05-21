@@ -1,6 +1,4 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm install --no-frozen-lockfile --ignore-scripts && pnpm --filter @paiol/admin build",
-  "outputDirectory": ".next",
-  "installCommand": "echo skip"
+  "installCommand": "pnpm install --no-frozen-lockfile --ignore-scripts"
 }
