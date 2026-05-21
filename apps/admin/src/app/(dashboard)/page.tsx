@@ -58,7 +58,7 @@ export default function AdminDashboard() {
   }, [isTokenDemo]);
 
   return (
-    <div style={{ padding: '32px 40px' }}>
+    <div>
       <h1 style={{ margin: '0 0 8px', fontSize: 28, fontWeight: 700, color: '#3d6b2e' }}>🌾 Paiol Tech — Admin</h1>
       <p style={{ color: '#6b7280', marginBottom: isDemo ? 12 : 32 }}>Visão geral da plataforma</p>
       {isDemo && (
