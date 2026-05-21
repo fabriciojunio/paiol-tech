@@ -20,4 +20,6 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
       - name: Instalar dependencias
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
+        env:
+          HUSKY: '0'
