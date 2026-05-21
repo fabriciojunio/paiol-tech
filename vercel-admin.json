@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "pnpm --filter @paiol/admin build",
+  "outputDirectory": "apps/admin/.next",
+  "installCommand": "pnpm install --no-frozen-lockfile --ignore-scripts"
+}
