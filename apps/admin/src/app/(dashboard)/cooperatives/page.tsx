@@ -15,6 +15,17 @@ interface Cooperative {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
+const DEMO_COOPERATIVES: Cooperative[] = [
+  { id: '1', name: 'Cooperativa Agro Mato Verde', cnpj: '45.678.901/0001-33', plan: 'premium', maxAssociates: 500, monthlyPrice: 2990, active: true, createdAt: '2023-11-20' },
+  { id: '2', name: 'Coop. Produtores do Cerrado', cnpj: '23.456.789/0001-44', plan: 'professional', maxAssociates: 200, monthlyPrice: 1490, active: true, createdAt: '2024-01-08' },
+  { id: '3', name: 'Cooperativa Raizes do Campo', cnpj: '67.890.123/0001-55', plan: 'basic', maxAssociates: 50, monthlyPrice: 490, active: true, createdAt: '2024-03-15' },
+  { id: '4', name: 'Agrocoop Centro-Oeste Ltda', cnpj: '12.345.678/0001-66', plan: 'professional', maxAssociates: 150, monthlyPrice: 1490, active: false, createdAt: '2023-09-01' },
+];
+
+function isDemo() {
+  return typeof window !== 'undefined' && localStorage.getItem('admin_token') === 'demo-token';
+}
+
 function authHeaders(): Record<string, string> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -28,6 +39,12 @@ export default function CooperativesPage() {
   const limit = 20;
 
   useEffect(() => {
+    if (isDemo()) {
+      setCooperatives(DEMO_COOPERATIVES);
+      setTotal(DEMO_COOPERATIVES.length);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     fetch(`${API_URL}/admin/cooperatives?page=${page}&limit=${limit}`, { headers: authHeaders() })
       .then((r) => r.json())
