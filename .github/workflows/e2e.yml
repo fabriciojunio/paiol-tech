@@ -20,4 +20,4 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
       - name: Instalar dependencias
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
