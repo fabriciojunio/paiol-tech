@@ -15,6 +15,20 @@ interface Debt {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
+const DEMO_DEBTS: Debt[] = [
+  { id: '1', producerId: '1', creditor: 'Banco do Brasil S.A.', amount: 38500, dueDate: '2024-06-15', status: 'PENDING', source: 'Open Finance', createdAt: '2024-04-10' },
+  { id: '2', producerId: '3', creditor: 'Sicoob Credicer', amount: 12750, dueDate: '2024-05-30', status: 'OVERDUE', source: 'Manual', createdAt: '2024-03-01' },
+  { id: '3', producerId: '2', creditor: 'Bradesco Agro', amount: 89200, dueDate: '2024-07-01', status: 'PENDING', source: 'Open Finance', createdAt: '2024-04-20' },
+  { id: '4', producerId: '5', creditor: 'Sicredi Centro-Oeste', amount: 5430, dueDate: '2024-04-28', status: 'PAID', source: 'Manual', createdAt: '2024-02-15' },
+  { id: '5', producerId: '1', creditor: 'Caixa Rural', amount: 22000, dueDate: '2024-08-10', status: 'PENDING', source: 'Open Finance', createdAt: '2024-05-02' },
+  { id: '6', producerId: '7', creditor: 'Banco do Nordeste', amount: 67800, dueDate: '2024-03-15', status: 'OVERDUE', source: 'Open Finance', createdAt: '2024-01-20' },
+  { id: '7', producerId: '4', creditor: 'Santander Agro', amount: 15000, dueDate: '2024-06-01', status: 'CANCELLED', source: 'Manual', createdAt: '2024-04-05' },
+];
+
+function isDemo() {
+  return typeof window !== 'undefined' && localStorage.getItem('admin_token') === 'demo-token';
+}
+
 function authHeaders(): Record<string, string> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -42,6 +56,12 @@ export default function AdminDebtsPage() {
   const limit = 20;
 
   useEffect(() => {
+    if (isDemo()) {
+      setDebts(DEMO_DEBTS);
+      setTotal(DEMO_DEBTS.length);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     fetch(`${API_URL}/admin/debts?page=${page}&limit=${limit}`, { headers: authHeaders() })
       .then((r) => r.json())
