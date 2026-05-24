@@ -15,6 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: JwtPayload): JwtPayload {
+    const validRoles = ['PRODUCER', 'ADMIN'];
+    if (!payload?.sub || !payload?.role || !validRoles.includes(payload.role)) {
+      throw new Error('Token inválido');
+    }
     return payload;
   }
 }
