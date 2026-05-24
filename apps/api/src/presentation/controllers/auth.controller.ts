@@ -1,4 +1,5 @@
-import { Controller, Post, Delete, Body, Req, Res, HttpCode, HttpStatus, ForbiddenException, Inject } from '@nestjs/common';
+import { Controller, Post, Delete, Body, Req, Res, HttpCode, HttpStatus, ForbiddenException, Inject, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
 import type { Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
@@ -28,6 +29,7 @@ export class AuthController {
 
   @Post('otp/send')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 3, ttl: 3600000 } })
   async sendOtp(@Body() body: unknown) {
     const { phone } = sendOtpSchema.parse(body);
     const result = await this.commandBus.execute<SendOtpCommand, { expiresIn: number }>(
@@ -38,6 +40,7 @@ export class AuthController {
 
   @Post('otp/verify')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 300000 } })
   async verifyOtp(@Body() body: unknown, @Res({ passthrough: true }) res: Response) {
     const { phone, code } = verifyOtpSchema.parse(body);
     const tokens = await this.commandBus.execute<VerifyOtpCommand, TokenPair>(

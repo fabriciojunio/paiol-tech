@@ -23,7 +23,7 @@ export class DeleteAccountHandler implements ICommandHandler<DeleteAccountComman
       action: 'ACCOUNT_DELETED',
       resource: 'producer',
       resourceId: command.producerId,
-      metadata: { phone: producer.phone, plan: producer.plan },
+      metadata: { plan: producer.plan },
     });
 
     await this.producerRepo.delete(command.producerId);

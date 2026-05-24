@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Body, Param, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, UseGuards, HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
@@ -26,7 +26,11 @@ export class OpenFinanceController {
     @CurrentUser() user: JwtPayload,
     @Body() body: { bankCode: string },
   ) {
-    return this.commandBus.execute(new ConnectBankCommand(user.sub, body.bankCode));
+    const bankCode = body.bankCode?.trim();
+    if (!bankCode || !/^\d{3,4}$/.test(bankCode)) {
+      throw new BadRequestException('bankCode inválido. Informe o código ISPB com 3 ou 4 dígitos.');
+    }
+    return this.commandBus.execute(new ConnectBankCommand(user.sub, bankCode));
   }
 
   @Post('sync/:connectionId')
