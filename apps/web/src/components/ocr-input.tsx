@@ -108,7 +108,7 @@ export function OcrInput({ onResult, onClose }: OcrInputProps) {
         )}
 
         {preview && !isProcessing && (
-          <img src={preview} alt="Boleto" className="w-full rounded-lg max-h-48 object-cover" />
+          <img src={preview} alt="Boleto" className="w-full rounded-lg max-h-48 object-cover" loading="lazy" />
         )}
 
         {error && <p className="text-sm text-destructive text-center">{error}</p>}
