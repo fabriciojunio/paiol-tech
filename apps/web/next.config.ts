@@ -27,14 +27,17 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {},
+  compress: true,
+
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [],
   },
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
 
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: [] } : false,
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 
   async headers() {
