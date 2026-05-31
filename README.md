@@ -7,7 +7,7 @@ Login sem senha · Alertas no WhatsApp · Open Finance · Offline-first
 
 **Deploy em produção:**
 - App Web (usuários): [paiol-tech.vercel.app](https://paiol-tech.vercel.app)
-- Painel Admin: [admin-psi-five-89.vercel.app](https://admin-psi-five-89.vercel.app) — usuário: `admin` · senha: `admin1234`
+- Painel Admin: [admin-psi-five-89.vercel.app](https://admin-psi-five-89.vercel.app) - usuário: `admin` · senha: `admin1234`
 
 ---
 
@@ -30,12 +30,12 @@ Login sem senha · Alertas no WhatsApp · Open Finance · Offline-first
 - Node.js >= 20
 - pnpm >= 11
 - PostgreSQL 16 (ou conta Supabase)
-- Redis (opcional em dev — usado para OTP sessions)
+- Redis (opcional em dev: usado para OTP sessions)
 
 ### 1. Instalar dependências
 
 ```bash
-git clone https://github.com/SEU_USUARIO/paiol-tech.git
+git clone https://github.com/fabriciojunio/paiol-tech.git
 cd paiol-tech
 pnpm install
 ```
@@ -48,11 +48,11 @@ cp .env.example .env
 ```
 
 Abra `.env` e preencha pelo menos:
-- `DATABASE_URL` — PostgreSQL connection string
-- `JWT_SECRET` — string aleatória segura (mínimo 32 caracteres)
+- `DATABASE_URL`: PostgreSQL connection string
+- `JWT_SECRET`: string aleatória segura (mínimo 32 caracteres)
 - `NEXT_PUBLIC_API_URL=http://localhost:3001/api`
 
-Em desenvolvimento, WhatsApp, Open Finance e Pagamentos usam **mocks automáticos** — não precisam de chaves reais.
+Em desenvolvimento, WhatsApp, Open Finance e Pagamentos usam **mocks automáticos**: não precisam de chaves reais.
 
 ### 3. Banco de dados
 
@@ -69,7 +69,7 @@ npx prisma generate
 ### 4. Rodar em desenvolvimento
 
 ```bash
-# Na raiz — sobe API (:3001), Web (:3000) e Admin (:3002) em paralelo
+# Na raiz: sobe API (:3001), Web (:3000) e Admin (:3002) em paralelo
 pnpm dev
 ```
 
@@ -90,7 +90,7 @@ pnpm dev
 ```bash
 pnpm lint          # ESLint em todos os packages
 pnpm typecheck     # TypeScript em todos os packages (0 erros)
-pnpm test          # Jest — 76 testes, 100% passing
+pnpm test          # Jest: 76 testes, 100% passing
 pnpm build         # Build de produção (Turbo)
 ```
 
@@ -121,8 +121,8 @@ k6 run tests/load/debts-load.js -e BASE_URL=http://localhost:3001/api -e JWT_TOK
 ```
 paiol-tech/
 ├── apps/
-│   ├── web/        Next.js 15 (PWA) — :3000
-│   ├── api/        NestJS — :3001
+│   ├── web/        Next.js 15 (PWA): :3000
+│   ├── api/        NestJS: :3001
 │   └── admin/      Painel cooperativa (Refine)
 ├── packages/
 │   ├── ui/         Componentes shadcn/ui compartilhados
@@ -158,23 +158,23 @@ chore(deps): update prisma to 6.x
 
 ## Roadmap
 
-- [x] ETAPA 0 — Infraestrutura base (monorepo, tooling)
-- [x] ETAPA 1 — Autenticação OTP WhatsApp
-- [x] ETAPA 2 — CRUD de dívidas
-- [x] ETAPA 3 — Dashboard + alertas WhatsApp
-- [x] ETAPA 4 — Entrada por voz + OCR de boleto
-- [x] ETAPA 5 — Open Finance (TecnoSpeed)
-- [x] ETAPA 6 — PWA offline (Workbox + Dexie.js)
-- [x] ETAPA 7 — Painel administrativo (Admin panel)
-- [x] ETAPA 8 — LGPD compliance (exportar dados + deletar conta)
-- [x] ETAPA 9 — Pagamentos PIX (Pagar.me)
-- [x] ETAPA 10 — E2E Playwright + k6 load test + Lighthouse CI
+- [x] ETAPA 0: Infraestrutura base (monorepo, tooling)
+- [x] ETAPA 1: Autenticação OTP WhatsApp
+- [x] ETAPA 2: CRUD de dívidas
+- [x] ETAPA 3: Dashboard + alertas WhatsApp
+- [x] ETAPA 4: Entrada por voz + OCR de boleto
+- [x] ETAPA 5: Open Finance (TecnoSpeed)
+- [x] ETAPA 6: PWA offline (Workbox + Dexie.js)
+- [x] ETAPA 7: Painel administrativo (Admin panel)
+- [x] ETAPA 8: LGPD compliance (exportar dados + deletar conta)
+- [x] ETAPA 9: Pagamentos PIX (Pagar.me)
+- [x] ETAPA 10: E2E Playwright + k6 load test + Lighthouse CI
 
 ---
 
 ## Fundador
 
-**Fabrício** — [linkedin.com/in/fabricio](https://linkedin.com)
+**Fabrício**: [linkedin.com/in/fabricio](https://linkedin.com)
 Stack diária: Lecom BPM + JavaScript + Java + MySQL
 
 ---

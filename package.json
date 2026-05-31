@@ -2,7 +2,7 @@
   "name": "paiol-tech",
   "version": "0.0.1",
   "private": true,
-  "description": "Paiol Tech — Gestão de dívidas rurais para produtores brasileiros",
+  "description": "Paiol Tech: Gestão de dívidas rurais para produtores brasileiros",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
