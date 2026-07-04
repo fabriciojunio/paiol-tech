@@ -5,7 +5,8 @@ dist/
 .env
 .env.local
 *.env.local
-tsconfig.tsbuildinfo
+.vercel/
+*.tsbuildinfo
 *.log
 .DS_Store
 .idea/
