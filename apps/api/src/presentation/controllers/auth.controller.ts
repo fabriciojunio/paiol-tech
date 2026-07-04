@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, Body, Req, Res, HttpCode, HttpStatus, ForbiddenException, Inject, UseGuards } from '@nestjs/common';
+import { Controller, Post, Delete, Body, Req, Res, HttpCode, HttpStatus, ForbiddenException, Inject } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
 import type { Request, Response } from 'express';

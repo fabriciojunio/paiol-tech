@@ -7,7 +7,7 @@ import { MarkDebtAsPaidCommand } from '../../application/commands/debts/mark-deb
 import { DeleteDebtCommand } from '../../application/commands/debts/delete-debt.handler';
 import { GetDebtsByProducerQuery, GetDebtDashboardQuery, GetDebtByIdQuery } from '../../application/queries/debts/get-debts.query';
 import { createDebtSchema, paginationSchema } from '@paiol/validators';
-import type { JwtPayload } from '@paiol/types';
+import type { DebtStatus, JwtPayload } from '@paiol/types';
 
 @Controller('debts')
 @UseGuards(JwtAuthGuard)
@@ -24,7 +24,7 @@ export class DebtsController {
   ) {
     const { page, limit } = paginationSchema.parse(query);
     const result = await this.queryBus.execute(
-      new GetDebtsByProducerQuery(user.sub, { status: query['status'] as any, creditor: query['creditor'] }, { page, limit }),
+      new GetDebtsByProducerQuery(user.sub, { status: query['status'] as DebtStatus | undefined, creditor: query['creditor'] }, { page, limit }),
     );
     return { data: result.debts, meta: { page, limit, total: result.total, totalPages: Math.ceil(result.total / limit) } };
   }

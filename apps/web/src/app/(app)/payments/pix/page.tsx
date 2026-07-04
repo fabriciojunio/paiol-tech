@@ -101,7 +101,7 @@ function PixPageContent() {
             <Card>
               <CardContent className="p-6 text-center">
                 <p className="text-sm font-medium text-muted-foreground mb-4">Escaneie o QR Code com o app do banco</p>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* img nativo: o QR Code vem de URL externa dinâmica do provedor de pagamento */}
                 <img
                   src={pix.qrCodeUrl}
                   alt="QR Code PIX"
