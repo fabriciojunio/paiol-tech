@@ -97,7 +97,9 @@ function LoginForm() {
     try {
       await apiClient.post('/auth/otp/verify', { phone: normalizedPhone, code });
       await refresh();
-      const redirect = searchParams.get('redirect') ?? '/';
+      // Aceita apenas caminhos internos para evitar open redirect
+      const requested = searchParams.get('redirect') ?? '/';
+      const redirect = requested.startsWith('/') && !requested.startsWith('//') ? requested : '/';
       router.push(redirect);
     } catch (err) {
       if (err instanceof ApiClientError) {
@@ -123,7 +125,7 @@ function LoginForm() {
         <CardDescription>
           {step === 'phone'
             ? 'Vamos te enviar um código no WhatsApp'
-            : `Enviamos um código de 4 dígitos para ${phone}${minutesLeft > 0 ? ` — vale por ${minutesLeft} min` : ''}`}
+            : `Enviamos um código de 4 dígitos para ${phone}${minutesLeft > 0 ? ` (vale por ${minutesLeft} min)` : ''}`}
         </CardDescription>
       </CardHeader>
 
@@ -162,6 +164,7 @@ function LoginForm() {
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
+                    aria-label={`Dígito ${i + 1} do código`}
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}

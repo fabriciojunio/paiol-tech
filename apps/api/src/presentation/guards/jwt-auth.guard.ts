@@ -7,7 +7,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err ?? !user) {
       throw new UnauthorizedException({
         code: 'UNAUTHORIZED',
-        message: 'Sua sessão encerrou — entre novamente.',
+        message: 'Sua sessão encerrou. Entre novamente.',
       });
     }
     return user;
