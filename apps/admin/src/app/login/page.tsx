@@ -5,6 +5,7 @@ import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -101,46 +102,46 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Demo credentials */}
-          <div style={{
-            background: '#f0fdf4',
-            border: '1px solid #bbf7d0',
-            borderRadius: 10,
-            padding: '12px 16px',
-            marginBottom: 28,
-          }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: '#166534', margin: '0 0 6px' }}>
-              Credenciais de demonstração
-            </p>
-            <p style={{ fontSize: 12, color: '#15803d', margin: '0 0 2px', fontFamily: 'monospace' }}>
-              Usuário: <strong>admin</strong>
-            </p>
-            <p style={{ fontSize: 12, color: '#15803d', margin: 0, fontFamily: 'monospace' }}>
-              Senha: <strong>admin1234</strong>
-            </p>
-          </div>
+          {DEMO_MODE && (
+            <div style={{
+              background: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: 10,
+              padding: '12px 16px',
+              marginBottom: 28,
+            }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: '#166534', margin: '0 0 6px' }}>
+                Ambiente de demonstração
+              </p>
+              <p style={{ fontSize: 12, color: '#15803d', margin: 0 }}>
+                Use o botão abaixo para navegar com dados de exemplo, sem credenciais.
+              </p>
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={(e) => void handleSubmit(e)} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+              <label htmlFor="admin-username" style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
                 Usuário
               </label>
               <input
+                id="admin-username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="Seu usuário"
                 required
                 autoComplete="username"
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+              <label htmlFor="admin-password" style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
                 Senha
               </label>
               <input
+                id="admin-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -173,36 +174,40 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Separator */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
-            <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-            <span style={{ fontSize: 12, color: '#9ca3af' }}>ou</span>
-            <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          </div>
+          {DEMO_MODE && (
+            <>
+              {/* Separator */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
+                <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
+                <span style={{ fontSize: 12, color: '#9ca3af' }}>ou</span>
+                <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
+              </div>
 
-          {/* Demo button */}
-          <button
-            type="button"
-            onClick={handleDemo}
-            style={{
-              width: '100%',
-              padding: '12px 0',
-              fontSize: 14,
-              fontWeight: 600,
-              background: '#f0fdf4',
-              color: '#166534',
-              border: '1px solid #bbf7d0',
-              borderRadius: 8,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-            }}
-          >
-            <span>👤</span>
-            <span>Acessar como demonstração</span>
-          </button>
+              {/* Demo button */}
+              <button
+                type="button"
+                onClick={handleDemo}
+                style={{
+                  width: '100%',
+                  padding: '12px 0',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background: '#f0fdf4',
+                  color: '#166534',
+                  border: '1px solid #bbf7d0',
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                }}
+              >
+                <span>👤</span>
+                <span>Acessar como demonstração</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
