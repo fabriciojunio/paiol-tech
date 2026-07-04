@@ -7,7 +7,7 @@ Login sem senha · Alertas no WhatsApp · Open Finance · Offline-first
 
 **Deploy em produção:**
 - App Web (usuários): [paiol-tech.vercel.app](https://paiol-tech.vercel.app)
-- Painel Admin: [admin-psi-five-89.vercel.app](https://admin-psi-five-89.vercel.app) - usuário: `admin` · senha: `admin1234`
+- Painel Admin: [admin-psi-five-89.vercel.app](https://admin-psi-five-89.vercel.app) (acesso restrito; credenciais via variáveis de ambiente)
 
 ---
 
@@ -82,8 +82,8 @@ pnpm dev
 ### 5. Acesso ao Admin
 
 - URL: http://localhost:3002
-- Usuário: `admin` (ou `ADMIN_USERNAME` do .env)
-- Senha: `paiol@admin2025` (ou `ADMIN_PASSWORD` do .env)
+- Usuário e senha: valores de `ADMIN_USERNAME` e `ADMIN_PASSWORD` do seu `.env`
+- Para exibir o acesso de demonstração na tela de login, defina `NEXT_PUBLIC_DEMO_MODE="true"` no ambiente do admin
 
 ### Comandos úteis
 
