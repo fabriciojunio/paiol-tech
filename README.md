@@ -90,8 +90,9 @@ pnpm dev
 ```bash
 pnpm lint          # ESLint em todos os packages
 pnpm typecheck     # TypeScript em todos os packages (0 erros)
-pnpm test          # Jest: 76 testes, 100% passing
+pnpm test          # 97 testes (Jest na API + Vitest nos packages), 100% passando
 pnpm build         # Build de produção (Turbo)
+pnpm audit --prod  # Auditoria de vulnerabilidades das dependências
 ```
 
 ### Testes E2E (Playwright)
