@@ -19,7 +19,7 @@ describe('Producer', () => {
   });
 
   it('should throw for invalid plan', () => {
-    expect(() => new Producer({ ...validProps, plan: 'gold' as any })).toThrow('inválido');
+    expect(() => new Producer({ ...validProps, plan: 'gold' as never })).toThrow('inválido');
   });
 
   it('should allow adding debt when under limit', () => {

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IPaymentService, CreatePixPaymentInput, CreatePixPaymentResult, PaymentStatus } from '../../domain/services/payment.service.interface';
@@ -87,9 +88,12 @@ export class PagarmeAdapter implements IPaymentService {
   }
 
   verifyWebhookSignature(payload: string, signature: string): boolean {
-    const crypto = require('crypto') as typeof import('crypto');
     const webhookSecret = this.config.getOrThrow('PAGARME_WEBHOOK_SECRET');
     const expected = crypto.createHmac('sha256', webhookSecret).update(payload).digest('hex');
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+    const received = Buffer.from(signature);
+    const wanted = Buffer.from(expected);
+    // timingSafeEqual lança exceção com tamanhos diferentes; o tamanho do
+    // HMAC é público, então a comparação prévia não vaza informação
+    return received.length === wanted.length && crypto.timingSafeEqual(received, wanted);
   }
 }
