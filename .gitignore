@@ -13,7 +13,7 @@ dist/
 .vscode/
 coverage/
 .cache/
-public/sw.js
-public/workbox-*
+**/public/sw.js
+**/public/workbox-*
 
 .github/java-upgrade/
