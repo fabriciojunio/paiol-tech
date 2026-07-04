@@ -9,7 +9,8 @@ import { OfflineBanner } from '@/components/offline-banner';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Paiol Tech — Suas dívidas na palma da mão',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://paiol-tech.vercel.app'),
+  title: 'Paiol Tech | Suas dívidas na palma da mão',
   description: 'Tudo que você deve, na palma da mão. Gestão simples de dívidas rurais.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
@@ -17,14 +18,21 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'Paiol',
   },
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    siteName: 'Paiol Tech',
+    title: 'Paiol Tech | Suas dívidas na palma da mão',
+    description: 'Gestão simples de dívidas rurais para produtores brasileiros.',
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: '#3d6b2e',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // Zoom liberado: bloquear escala viola WCAG 1.4.4 (baixa visão)
+  maximumScale: 5,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

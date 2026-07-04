@@ -5,9 +5,10 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Paiol Tech — Admin',
+  title: 'Paiol Tech Admin',
   description: 'Painel administrativo Paiol Tech',
   icons: { icon: '/icon.svg' },
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
