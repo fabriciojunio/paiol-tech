@@ -42,6 +42,11 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
   const res = await fetch(`${API_BASE}${path}`, fetchOptions);
 
+  // Respostas sem corpo (204 No Content) não têm JSON para ler.
+  if (res.ok && res.status === 204) {
+    return undefined as T;
+  }
+
   const json = (await res.json()) as ApiSuccess<T> | ApiError;
 
   if (!res.ok) {

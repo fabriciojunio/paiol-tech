@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Fuse from 'fuse.js';
 import { Button, Input, Label, Card, CardContent } from '@paiol/ui';
-import { COMMON_CREDITORS } from '@paiol/utils';
+import { COMMON_CREDITORS, CREDIT_LINE_OPTIONS } from '@paiol/utils';
 import { apiClient, ApiClientError } from '@/lib/api-client';
 import { useToast } from '@/components/toast-provider';
 import { AppShell } from '@/components/app-shell';
 import { VoiceInput } from '@/components/voice-input';
 import { OcrInput } from '@/components/ocr-input';
-import type { CreateDebtDto, PossibleDuplicate } from '@paiol/types';
+import type { CreateDebtDto, PossibleDuplicate, RuralCreditLine } from '@paiol/types';
 import { Mic, Camera, AlertTriangle } from 'lucide-react';
 
 const fuse = new Fuse(COMMON_CREDITORS as unknown as string[], { threshold: 0.4 });
@@ -26,6 +26,7 @@ export default function NewDebtPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [form, setForm] = useState<ParsedDebt>({ creditor: '', amount: '', dueDate: '', description: '' });
+  const [creditLine, setCreditLine] = useState<RuralCreditLine | ''>('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<ParsedDebt>>({});
@@ -72,6 +73,7 @@ export default function NewDebtPage() {
       dueDate: form.dueDate,
       source: 'MANUAL',
       ...(form.description ? { description: form.description } : {}),
+      ...(creditLine ? { creditLine } : {}),
     };
 
     if (!force && duplicate) {
@@ -195,6 +197,24 @@ export default function NewDebtPage() {
               className={errors.dueDate ? 'border-destructive' : ''}
             />
             {errors.dueDate && <p className="text-xs text-destructive">{errors.dueDate}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="creditLine">Linha de crédito (opcional)</Label>
+            <select
+              id="creditLine"
+              value={creditLine}
+              onChange={(e) => setCreditLine(e.target.value as RuralCreditLine | '')}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <option value="">Não sei / não se aplica</option>
+              {CREDIT_LINE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">
+              Está no contrato ou no carnê do banco. Se não souber, pode deixar em branco.
+            </p>
           </div>
 
           <div className="space-y-2">
