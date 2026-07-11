@@ -1,4 +1,4 @@
-import type { DebtSource, DebtStatus } from '@paiol/types';
+import type { DebtSource, DebtStatus, RuralCreditLine } from '@paiol/types';
 
 const VALID_STATUS_TRANSITIONS: Record<DebtStatus, DebtStatus[]> = {
   PENDING: ['PAID', 'OVERDUE', 'RENEGOTIATED'],
@@ -18,6 +18,7 @@ interface DebtProps {
   status: DebtStatus;
   bankCode?: string;
   contractNumber?: string;
+  creditLine?: RuralCreditLine;
   createdAt: Date;
 }
 
@@ -32,6 +33,7 @@ export class Debt {
   readonly status: DebtStatus;
   readonly bankCode?: string;
   readonly contractNumber?: string;
+  readonly creditLine?: RuralCreditLine;
   readonly createdAt: Date;
 
   constructor(props: DebtProps) {
@@ -51,6 +53,7 @@ export class Debt {
     this.status = props.status;
     this.bankCode = props.bankCode;
     this.contractNumber = props.contractNumber;
+    this.creditLine = props.creditLine;
     this.createdAt = props.createdAt;
   }
 

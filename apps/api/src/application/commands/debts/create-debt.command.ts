@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import type { DebtSource } from '@paiol/types';
+import type { DebtSource, RuralCreditLine } from '@paiol/types';
 
 export class CreateDebtCommand implements ICommand {
   constructor(
@@ -12,5 +12,6 @@ export class CreateDebtCommand implements ICommand {
     public readonly bankCode?: string,
     public readonly contractNumber?: string,
     public readonly forceDuplicate?: boolean,
+    public readonly creditLine?: RuralCreditLine,
   ) {}
 }

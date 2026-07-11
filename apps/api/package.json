@@ -27,6 +27,7 @@
     "@nestjs/swagger": "^8.1.0",
     "@nestjs/throttler": "^6.4.0",
     "@paiol/types": "workspace:*",
+    "@paiol/utils": "workspace:*",
     "@paiol/validators": "workspace:*",
     "@prisma/client": "^6.1.0",
     "@types/cookie-parser": "^1.4.10",
