@@ -1,4 +1,4 @@
-export type OpenFinanceStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED';
+export type OpenFinanceStatus = 'ACTIVE' | 'PENDING_AUTHORIZATION' | 'EXPIRED' | 'REVOKED';
 
 export interface OpenFinanceConnection {
   id: string;
