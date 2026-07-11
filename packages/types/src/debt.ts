@@ -1,6 +1,20 @@
 export type DebtStatus = 'PENDING' | 'PAID' | 'OVERDUE' | 'RENEGOTIATED';
 export type DebtSource = 'OPEN_FINANCE' | 'MANUAL' | 'VOICE' | 'OCR';
 
+/**
+ * Linhas de crédito rural mais comuns no Brasil. Usadas para o produtor
+ * reconhecer a dívida de cara ("essa é a do Pronaf") e para relatórios
+ * por safra.
+ */
+export type RuralCreditLine =
+  | 'PRONAF'
+  | 'PRONAMP'
+  | 'CUSTEIO'
+  | 'INVESTIMENTO'
+  | 'COMERCIALIZACAO'
+  | 'CPR'
+  | 'OUTRA';
+
 export interface Debt {
   id: string;
   producerId: string;
@@ -12,6 +26,7 @@ export interface Debt {
   status: DebtStatus;
   bankCode?: string;
   contractNumber?: string;
+  creditLine?: RuralCreditLine;
   createdAt: Date;
 }
 
@@ -23,6 +38,7 @@ export interface CreateDebtDto {
   source: DebtSource;
   bankCode?: string;
   contractNumber?: string;
+  creditLine?: RuralCreditLine;
 }
 
 export interface UpdateDebtDto {
