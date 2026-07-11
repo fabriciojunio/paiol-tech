@@ -1,7 +1,7 @@
 'use client';
 
 import type { Debt } from '@paiol/types';
-import { formatCurrency, dueDateLabel, formatDateBR } from '@paiol/utils';
+import { formatCurrency, dueDateLabel, formatDateBR, CREDIT_LINE_LABELS } from '@paiol/utils';
 import { Badge, Button, Card, CardContent } from '@paiol/ui';
 import { CheckCircle2, Trash2, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -42,6 +42,11 @@ export function DebtCard({ debt, onMarkAsPaid, onDelete }: DebtCardProps) {
               {isReadOnly && (
                 <Badge variant="outline" className="text-xs">
                   {SOURCE_LABEL[debt.source]}
+                </Badge>
+              )}
+              {debt.creditLine && debt.creditLine !== 'OUTRA' && (
+                <Badge variant="secondary" className="text-xs">
+                  {CREDIT_LINE_LABELS[debt.creditLine]}
                 </Badge>
               )}
             </div>
