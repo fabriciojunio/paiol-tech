@@ -56,6 +56,7 @@ export class DebtsController {
         dto.bankCode,
         dto.contractNumber,
         (body as Record<string, unknown>)['forceDuplicate'] === true,
+        dto.creditLine,
       ),
     );
     return { data: debt };
