@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { SyncOpenFinanceCommand } from './sync-open-finance.command';
 import { OPEN_FINANCE_SERVICE, type IOpenFinanceService } from '../../../domain/services/open-finance.service.interface';
@@ -28,11 +28,27 @@ export class SyncOpenFinanceHandler implements ICommandHandler<SyncOpenFinanceCo
   ) {}
 
   async execute(command: SyncOpenFinanceCommand): Promise<SyncResult> {
+    // Deny by default: a conexão precisa existir E pertencer ao produtor.
+    const connection = await this.ofRepo.findById(command.connectionId);
+    if (!connection || connection.producerId !== command.producerId) {
+      throw new NotFoundException('Conexão não encontrada');
+    }
+    if (connection.status === 'REVOKED' || connection.status === 'EXPIRED') {
+      throw new BadRequestException('Conexão inativa. Conecte o banco novamente.');
+    }
+    if (connection.status === 'PENDING_AUTHORIZATION') {
+      throw new BadRequestException('Autorize a conexão no banco antes de sincronizar.');
+    }
+
     const producer = await this.producerRepo.findById(command.producerId);
     if (!producer) throw new NotFoundException('Produtor não encontrado');
     if (!producer.cpfCnpj) throw new NotFoundException('CPF/CNPJ do produtor não cadastrado');
 
-    const bankDebts = await this.ofService.fetchDebts(producer.cpfCnpj, command.bankCode);
+    const bankDebts = await this.ofService.fetchDebts(
+      producer.cpfCnpj,
+      connection.bankCode,
+      connection.consentId,
+    );
 
     let imported = 0;
     let skipped = 0;
@@ -52,6 +68,7 @@ export class SyncOpenFinanceHandler implements ICommandHandler<SyncOpenFinanceCo
         description: bd.description,
         bankCode: bd.bankCode,
         contractNumber: bd.contractNumber,
+        creditLine: bd.creditLine,
         createdAt: new Date(),
       });
 
@@ -66,10 +83,10 @@ export class SyncOpenFinanceHandler implements ICommandHandler<SyncOpenFinanceCo
       action: 'OPEN_FINANCE_SYNC',
       resource: 'open_finance_connection',
       resourceId: command.connectionId,
-      metadata: { bankCode: command.bankCode, imported, skipped, total: bankDebts.length },
+      metadata: { bankCode: connection.bankCode, provider: this.ofService.providerName, imported, skipped, total: bankDebts.length },
     });
 
-    this.logger.log(`Sync ${command.bankCode} → produtor ${command.producerId}: ${imported} importadas, ${skipped} já existentes`);
+    this.logger.log(`Sync ${connection.bankCode} → produtor ${command.producerId}: ${imported} importadas, ${skipped} já existentes`);
     return { imported, skipped, total: bankDebts.length };
   }
 }
