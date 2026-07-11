@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { CreateDebtHandler } from './create-debt.handler';
 import { CreateDebtCommand } from './create-debt.command';
 import { Debt } from '../../../domain/entities/debt.entity';
@@ -61,11 +61,12 @@ describe('CreateDebtHandler', () => {
     await expect(handler.execute(baseCommand)).rejects.toThrow(BadRequestException);
   });
 
-  it('lança PLAN_LIMIT_REACHED quando limite do plano básico é atingido', async () => {
+  it('não bloqueia cadastro no plano básico (núcleo grátis sem limite)', async () => {
     const producer = makeProducer('basic');
-    const debtRepo = makeDebtRepo({ countByProducer: jest.fn().mockResolvedValue(5) });
+    const debtRepo = makeDebtRepo({ countByProducer: jest.fn().mockResolvedValue(500) });
     const handler = new CreateDebtHandler(debtRepo, makeProducerRepo(producer));
-    await expect(handler.execute(baseCommand)).rejects.toThrow(ForbiddenException);
+    const result = await handler.execute(baseCommand);
+    expect(result).toBeInstanceOf(Debt);
   });
 
   it('lança DUPLICATE_DEBT quando há possível duplicata', async () => {
