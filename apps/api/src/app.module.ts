@@ -13,8 +13,7 @@ import { PrismaAlertRepository } from './infrastructure/database/prisma-alert.re
 import { PrismaOpenFinanceRepository } from './infrastructure/database/prisma-open-finance.repository';
 import { ZApiAdapter } from './infrastructure/whatsapp/zapi.adapter';
 import { WhatsAppMockAdapter } from './infrastructure/whatsapp/whatsapp-mock.adapter';
-import { TecnoSpeedAdapter } from './infrastructure/open-finance/tecnospeed.adapter';
-import { OpenFinanceMockAdapter } from './infrastructure/open-finance/open-finance-mock.adapter';
+import { createOpenFinanceProvider } from './infrastructure/open-finance/open-finance-provider.factory';
 import { PaymentMockAdapter } from './infrastructure/payment/payment-mock.adapter';
 import { PagarmeAdapter } from './infrastructure/payment/pagarme.adapter';
 import { AuditService } from './infrastructure/audit/audit.service';
@@ -22,6 +21,8 @@ import { JwtStrategy } from './infrastructure/auth/jwt.strategy';
 
 import { OtpService } from './application/services/otp.service';
 import { TokenService } from './application/services/token.service';
+import { PlanService } from './application/services/plan.service';
+import { FeatureGuard } from './presentation/guards/feature.guard';
 import { SendOtpHandler } from './application/commands/auth/send-otp.handler';
 import { VerifyOtpHandler } from './application/commands/auth/verify-otp.handler';
 import { CreateDebtHandler } from './application/commands/debts/create-debt.handler';
@@ -31,6 +32,7 @@ import { CreatePixPaymentHandler } from './application/commands/payments/create-
 import { GetDebtsByProducerHandler, GetDebtDashboardHandler, GetDebtByIdHandler } from './application/queries/debts/get-debts.handler';
 import { ConnectBankHandler } from './application/commands/open-finance/connect-bank.handler';
 import { SyncOpenFinanceHandler } from './application/commands/open-finance/sync-open-finance.handler';
+import { RevokeConnectionHandler } from './application/commands/open-finance/revoke-connection.handler';
 import { GetConnectionsHandler } from './application/queries/open-finance/get-connections.handler';
 import { AlertsJob } from './application/jobs/alerts.job';
 
@@ -54,7 +56,7 @@ import { PAYMENT_SERVICE } from './domain/services/payment.service.interface';
 const COMMAND_HANDLERS = [
   SendOtpHandler, VerifyOtpHandler,
   CreateDebtHandler, MarkDebtAsPaidHandler, DeleteDebtHandler,
-  ConnectBankHandler, SyncOpenFinanceHandler,
+  ConnectBankHandler, SyncOpenFinanceHandler, RevokeConnectionHandler,
   DeleteAccountHandler,
   CreatePixPaymentHandler,
 ];
@@ -81,6 +83,8 @@ const QUERY_HANDLERS = [GetDebtsByProducerHandler, GetDebtDashboardHandler, GetD
     AuditService,
     OtpService,
     TokenService,
+    PlanService,
+    FeatureGuard,
     JwtStrategy,
     AlertsJob,
     ...COMMAND_HANDLERS,
@@ -101,12 +105,7 @@ const QUERY_HANDLERS = [GetDebtsByProducerHandler, GetDebtDashboardHandler, GetD
     },
     {
       provide: OPEN_FINANCE_SERVICE,
-      useFactory: (config: ConfigService) => {
-        if (config.get('NODE_ENV') !== 'production' || !config.get('TECNOSPEED_API_KEY')) {
-          return new OpenFinanceMockAdapter();
-        }
-        return new TecnoSpeedAdapter(config);
-      },
+      useFactory: createOpenFinanceProvider,
       inject: [ConfigService],
     },
     {

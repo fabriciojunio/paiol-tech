@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, TrendingUp, Clock, Plus } from 'lucide-react';
 import { Button, Card, CardContent } from '@paiol/ui';
-import { formatCurrency, dueDateLabel } from '@paiol/utils';
+import { formatCurrency, dueDateLabel, harvestLabel } from '@paiol/utils';
 import { apiClient } from '@/lib/api-client';
 import { DebtCard } from '@/components/debt-card';
 import { AppShell } from '@/components/app-shell';
@@ -38,9 +38,14 @@ export default function HomePage() {
   return (
     <AppShell title="🌾 Paiol">
       <div className="space-y-4">
-        <p className="text-muted-foreground text-sm">
-          Olá! Aqui estão suas dívidas.
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-muted-foreground text-sm">
+            Olá! Aqui estão suas dívidas.
+          </p>
+          <span className="text-xs font-medium text-muted-foreground bg-muted rounded-full px-3 py-1 whitespace-nowrap">
+            {harvestLabel()}
+          </span>
+        </div>
 
         {isLoading ? (
           <div className="space-y-3">

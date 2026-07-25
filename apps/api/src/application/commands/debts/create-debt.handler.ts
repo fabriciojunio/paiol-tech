@@ -56,6 +56,7 @@ export class CreateDebtHandler implements ICommandHandler<CreateDebtCommand> {
       description: command.description,
       bankCode: command.bankCode,
       contractNumber: command.contractNumber,
+      creditLine: command.creditLine,
       createdAt: new Date(),
     });
 

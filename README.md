@@ -54,6 +54,8 @@ Abra `.env` e preencha pelo menos:
 
 Em desenvolvimento, WhatsApp, Open Finance e Pagamentos usam **mocks automáticos**: não precisam de chaves reais.
 
+Para trocar o provedor de Open Finance (mock, Pluggy, TecnoSpeed), veja [docs/open-finance.md](docs/open-finance.md).
+
 ### 3. Banco de dados
 
 ```bash
@@ -114,6 +116,14 @@ pnpm exec playwright test
 cd apps/api
 k6 run tests/load/debts-load.js -e BASE_URL=http://localhost:3001/api -e JWT_TOKEN=<token>
 ```
+
+---
+
+## Modelo de planos
+
+O núcleo do produto é grátis para sempre: cadastro de dívidas (formulário, voz ou foto do boleto), dashboard, alertas de vencimento no WhatsApp, calendário de safra e uso offline.
+
+Recursos que dependem de fornecedor pago ficam no catálogo premium (sincronização automática via Open Finance, iniciação de pagamento Pix, multipropriedade, acesso do contador). Durante o lançamento tudo está liberado; a cobrança liga por variável de ambiente (`FREEMIUM_ENFORCEMENT=on`), sem deploy. O catálogo vive em `packages/types/src/plan.ts` e o gating em `PlanService` + `@RequiresFeature`.
 
 ---
 

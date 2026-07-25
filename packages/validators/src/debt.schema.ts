@@ -2,6 +2,15 @@ import { z } from 'zod';
 
 export const debtSourceSchema = z.enum(['OPEN_FINANCE', 'MANUAL', 'VOICE', 'OCR']);
 export const debtStatusSchema = z.enum(['PENDING', 'PAID', 'OVERDUE', 'RENEGOTIATED']);
+export const ruralCreditLineSchema = z.enum([
+  'PRONAF',
+  'PRONAMP',
+  'CUSTEIO',
+  'INVESTIMENTO',
+  'COMERCIALIZACAO',
+  'CPR',
+  'OUTRA',
+]);
 
 export const createDebtSchema = z.object({
   creditor: z.string().min(1, 'Nome do credor é obrigatório').max(200),
@@ -11,6 +20,7 @@ export const createDebtSchema = z.object({
   source: debtSourceSchema,
   bankCode: z.string().optional(),
   contractNumber: z.string().optional(),
+  creditLine: ruralCreditLineSchema.optional(),
 });
 
 export const updateDebtSchema = z.object({

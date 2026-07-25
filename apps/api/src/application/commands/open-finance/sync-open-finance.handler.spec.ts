@@ -1,33 +1,48 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { SyncOpenFinanceHandler } from './sync-open-finance.handler';
 import { SyncOpenFinanceCommand } from './sync-open-finance.command';
 import { Producer } from '../../../domain/entities/producer.entity';
 import { Debt } from '../../../domain/entities/debt.entity';
 import type { IOpenFinanceService, BankDebt } from '../../../domain/services/open-finance.service.interface';
-import type { IOpenFinanceRepository } from '../../../domain/repositories/open-finance.repository.interface';
+import type { IOpenFinanceRepository, OpenFinanceConnectionRecord } from '../../../domain/repositories/open-finance.repository.interface';
 import type { IProducerRepository } from '../../../domain/repositories/producer.repository.interface';
 import type { IDebtRepository } from '../../../domain/repositories/debt.repository.interface';
 
 const makeProducer = (cpfCnpj = '123.456.789-09') =>
   new Producer({ id: 'prod-1', phone: '+5511987654321', plan: 'professional', cpfCnpj, createdAt: new Date() });
 
-const makeBankDebt = (contractNumber: string): BankDebt => ({
+const makeBankDebt = (contractNumber: string, extra: Partial<BankDebt> = {}): BankDebt => ({
   contractNumber,
   creditor: 'Banco do Brasil',
   amount: 5000,
   dueDate: new Date('2026-03-15'),
   bankCode: '001',
   bankName: 'Banco do Brasil',
+  ...extra,
+});
+
+const makeConnection = (overrides: Partial<OpenFinanceConnectionRecord> = {}): OpenFinanceConnectionRecord => ({
+  id: 'conn-1',
+  producerId: 'prod-1',
+  bankCode: '001',
+  bankName: 'Banco do Brasil',
+  consentId: 'consent-1',
+  status: 'ACTIVE',
+  createdAt: new Date(),
+  ...overrides,
 });
 
 const makeAudit = () => ({ log: jest.fn().mockResolvedValue(undefined) });
 
 const makeOfService = (debts: BankDebt[] = []): IOpenFinanceService => ({
+  providerName: 'mock',
   getAvailableBanks: jest.fn().mockResolvedValue([]),
+  createConsent: jest.fn(),
   fetchDebts: jest.fn().mockResolvedValue(debts),
 });
 
-const makeOfRepo = (): IOpenFinanceRepository => ({
+const makeOfRepo = (connection: OpenFinanceConnectionRecord | null = makeConnection()): IOpenFinanceRepository => ({
+  findById: jest.fn().mockResolvedValue(connection),
   findByProducer: jest.fn(),
   findByProducerAndBank: jest.fn(),
   save: jest.fn(),
@@ -57,7 +72,7 @@ const makeDebtRepo = (existingByContract: Debt | null = null): IDebtRepository =
   getDashboard: jest.fn(),
 });
 
-const CMD = new SyncOpenFinanceCommand('prod-1', '001', 'conn-1');
+const CMD = new SyncOpenFinanceCommand('prod-1', 'conn-1');
 
 describe('SyncOpenFinanceHandler', () => {
   it('importa dívidas novas do banco', async () => {
@@ -71,6 +86,22 @@ describe('SyncOpenFinanceHandler', () => {
     expect(debtRepo.save).toHaveBeenCalledTimes(2);
   });
 
+  it('usa o banco e o consentimento da conexão, não valores do cliente', async () => {
+    const ofService = makeOfService([makeBankDebt('OF-001')]);
+    const connection = makeConnection({ bankCode: '748', consentId: 'consent-748' });
+    const handler = new SyncOpenFinanceHandler(ofService, makeOfRepo(connection), makeProducerRepo(), makeDebtRepo(), makeAudit() as never);
+    await handler.execute(CMD);
+    expect(ofService.fetchDebts).toHaveBeenCalledWith('123.456.789-09', '748', 'consent-748');
+  });
+
+  it('preserva a linha de crédito rural detectada pelo provedor', async () => {
+    const debtRepo = makeDebtRepo(null);
+    const bankDebts = [makeBankDebt('OF-001', { creditLine: 'PRONAF' })];
+    const handler = new SyncOpenFinanceHandler(makeOfService(bankDebts), makeOfRepo(), makeProducerRepo(), debtRepo, makeAudit() as never);
+    await handler.execute(CMD);
+    expect(debtRepo.save).toHaveBeenCalledWith(expect.objectContaining({ creditLine: 'PRONAF' }));
+  });
+
   it('pula dívidas já existentes pelo contractNumber', async () => {
     const existing = new Debt({ id: 'd1', producerId: 'prod-1', creditor: 'BB', amount: 5000, dueDate: new Date(), source: 'OPEN_FINANCE', status: 'PENDING', createdAt: new Date() });
     const debtRepo = makeDebtRepo(existing);
@@ -79,6 +110,29 @@ describe('SyncOpenFinanceHandler', () => {
     const result = await handler.execute(CMD);
     expect(result.imported).toBe(0);
     expect(result.skipped).toBe(2);
+  });
+
+  it('lança NotFoundException se a conexão não existe', async () => {
+    const handler = new SyncOpenFinanceHandler(makeOfService(), makeOfRepo(null), makeProducerRepo(), makeDebtRepo(), makeAudit() as never);
+    await expect(handler.execute(CMD)).rejects.toThrow(NotFoundException);
+  });
+
+  it('lança NotFoundException se a conexão é de outro produtor', async () => {
+    const alheia = makeConnection({ producerId: 'prod-2' });
+    const handler = new SyncOpenFinanceHandler(makeOfService(), makeOfRepo(alheia), makeProducerRepo(), makeDebtRepo(), makeAudit() as never);
+    await expect(handler.execute(CMD)).rejects.toThrow(NotFoundException);
+  });
+
+  it('lança BadRequest se a conexão foi revogada', async () => {
+    const revogada = makeConnection({ status: 'REVOKED' });
+    const handler = new SyncOpenFinanceHandler(makeOfService(), makeOfRepo(revogada), makeProducerRepo(), makeDebtRepo(), makeAudit() as never);
+    await expect(handler.execute(CMD)).rejects.toThrow(BadRequestException);
+  });
+
+  it('lança BadRequest se o consentimento ainda não foi autorizado', async () => {
+    const pendente = makeConnection({ status: 'PENDING_AUTHORIZATION' });
+    const handler = new SyncOpenFinanceHandler(makeOfService(), makeOfRepo(pendente), makeProducerRepo(), makeDebtRepo(), makeAudit() as never);
+    await expect(handler.execute(CMD)).rejects.toThrow(BadRequestException);
   });
 
   it('lança NotFoundException se produtor não existe', async () => {
