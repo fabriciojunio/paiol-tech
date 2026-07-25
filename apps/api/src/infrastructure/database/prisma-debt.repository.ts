@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import type { IDebtRepository, DebtPage, DuplicateCheckParams } from '../../domain/repositories/debt.repository.interface';
 import { Debt } from '../../domain/entities/debt.entity';
-import type { DebtFilters, DebtSource, DebtStatus, PaginationQuery } from '@paiol/types';
+import type { DebtFilters, DebtSource, DebtStatus, PaginationQuery, RuralCreditLine } from '@paiol/types';
 
 @Injectable()
 export class PrismaDebtRepository implements IDebtRepository {
@@ -87,6 +87,7 @@ export class PrismaDebtRepository implements IDebtRepository {
         status: debt.status,
         bankCode: debt.bankCode,
         contractNumber: debt.contractNumber,
+        creditLine: debt.creditLine,
         createdAt: debt.createdAt,
       },
       update: {
@@ -161,6 +162,7 @@ export class PrismaDebtRepository implements IDebtRepository {
       status: row.status as DebtStatus,
       bankCode: (row.bankCode as string | null | undefined) ?? undefined,
       contractNumber: (row.contractNumber as string | null | undefined) ?? undefined,
+      creditLine: (row.creditLine as RuralCreditLine | null | undefined) ?? undefined,
       createdAt: row.createdAt as Date,
     });
   }

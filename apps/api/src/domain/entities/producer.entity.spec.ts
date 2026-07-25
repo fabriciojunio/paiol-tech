@@ -22,25 +22,21 @@ describe('Producer', () => {
     expect(() => new Producer({ ...validProps, plan: 'gold' as never })).toThrow('inválido');
   });
 
-  it('should allow adding debt when under limit', () => {
+  it('permite cadastro ilimitado de dívidas no plano básico (núcleo grátis)', () => {
     const producer = new Producer(validProps);
     expect(producer.canAddDebt(4)).toBe(true);
+    expect(producer.canAddDebt(1000)).toBe(true);
   });
 
-  it('should block adding debt when at limit (basic = 5)', () => {
-    const producer = new Producer(validProps);
-    expect(producer.canAddDebt(5)).toBe(false);
-  });
-
-  it('should allow unlimited debts for professional plan', () => {
+  it('permite cadastro ilimitado no plano professional', () => {
     const producer = new Producer({ ...validProps, plan: 'professional' });
     expect(producer.canAddDebt(1000)).toBe(true);
   });
 
-  it('should report correct feature access per plan', () => {
+  it('libera voz e foto de boleto em todos os planos', () => {
     const basic = new Producer(validProps);
-    expect(basic.hasVoiceAccess).toBe(false);
-    expect(basic.hasOcrAccess).toBe(false);
+    expect(basic.hasVoiceAccess).toBe(true);
+    expect(basic.hasOcrAccess).toBe(true);
 
     const pro = new Producer({ ...validProps, plan: 'professional' });
     expect(pro.hasVoiceAccess).toBe(true);

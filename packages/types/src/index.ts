@@ -1,4 +1,5 @@
 export * from './producer';
+export * from './plan';
 export * from './debt';
 export * from './alert';
 export * from './cooperative';

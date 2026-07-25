@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import type { IOpenFinanceRepository, OpenFinanceConnectionRecord } from '../../domain/repositories/open-finance.repository.interface';
+import type { IOpenFinanceRepository, OpenFinanceConnectionRecord, OpenFinanceConnectionStatus } from '../../domain/repositories/open-finance.repository.interface';
 
 @Injectable()
 export class PrismaOpenFinanceRepository implements IOpenFinanceRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findById(id: string): Promise<OpenFinanceConnectionRecord | null> {
+    const row = await this.prisma.openFinanceConnection.findUnique({ where: { id } });
+    return row ? this.toDomain(row) : null;
+  }
 
   async findByProducer(producerId: string): Promise<OpenFinanceConnectionRecord[]> {
     const rows = await this.prisma.openFinanceConnection.findMany({
@@ -68,7 +73,7 @@ export class PrismaOpenFinanceRepository implements IOpenFinanceRepository {
       bankCode: row.bankCode as string,
       bankName: row.bankName as string,
       consentId: (row.consentId as string | null) ?? undefined,
-      status: row.status as 'ACTIVE' | 'EXPIRED' | 'REVOKED',
+      status: row.status as OpenFinanceConnectionStatus,
       lastSyncAt: (row.lastSyncAt as Date | null) ?? undefined,
       expiresAt: (row.expiresAt as Date | null) ?? undefined,
       createdAt: row.createdAt as Date,
