@@ -39,4 +39,14 @@ export default [
       eqeqeq: ['error', 'always'],
     },
   },
+  {
+    // A API NestJS injeta dependências pelo tipo do construtor
+    // (emitDecoratorMetadata). Converter esses imports para "import type"
+    // apaga a referência de runtime e quebra a injeção de dependência,
+    // então a regra fica desligada apenas na API.
+    files: ['apps/api/**/*.ts'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'off',
+    },
+  },
 ];

@@ -6,18 +6,40 @@ on:
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
-    name: Build
+  qualidade:
+    name: Lint, tipos, testes e build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
+
       - name: Instalar dependencias
         run: pnpm install --no-frozen-lockfile --ignore-scripts
         env:
           HUSKY: '0'
+
+      - name: Gerar Prisma Client
+        run: pnpm --filter @paiol/api exec prisma generate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Verificacao de tipos
+        run: pnpm typecheck
+
+      - name: Testes
+        run: pnpm test
+
+      - name: Build de producao
+        run: pnpm build
