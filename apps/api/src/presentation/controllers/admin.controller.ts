@@ -1,11 +1,22 @@
 import { Controller, Get, Post, Body, Query, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Throttle } from '@nestjs/throttler';
+import { IsString, MaxLength } from 'class-validator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import * as crypto from 'crypto';
+
+class AdminLoginDto {
+  @IsString()
+  @MaxLength(128)
+  username!: string;
+
+  @IsString()
+  @MaxLength(128)
+  password!: string;
+}
 
 @Controller('admin')
 export class AdminController {
@@ -16,7 +27,7 @@ export class AdminController {
 
   @Post('login')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
-  async login(@Body() body: { username: string; password: string }) {
+  async login(@Body() body: AdminLoginDto) {
     const adminUser = process.env['ADMIN_USERNAME'];
     const adminPass = process.env['ADMIN_PASSWORD'];
 
@@ -24,15 +35,12 @@ export class AdminController {
       throw new UnauthorizedException('Credenciais de admin não configuradas.');
     }
 
-    // Comparação segura contra timing attacks
-    const userMatch = crypto.timingSafeEqual(
-      Buffer.from(body.username ?? ''),
-      Buffer.from(adminUser),
-    );
-    const passMatch = crypto.timingSafeEqual(
-      Buffer.from(body.password ?? ''),
-      Buffer.from(adminPass),
-    );
+    // Comparação segura contra timing attacks. O hash normaliza o tamanho
+    // dos buffers: timingSafeEqual lança exceção com tamanhos diferentes,
+    // o que derrubava a request com 500 e revelava o tamanho da credencial.
+    const digest = (value: string) => crypto.createHash('sha256').update(value).digest();
+    const userMatch = crypto.timingSafeEqual(digest(body.username ?? ''), digest(adminUser));
+    const passMatch = crypto.timingSafeEqual(digest(body.password ?? ''), digest(adminPass));
 
     if (!userMatch || !passMatch) {
       throw new UnauthorizedException('Credenciais inválidas');

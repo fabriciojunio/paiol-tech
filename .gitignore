@@ -5,14 +5,15 @@ dist/
 .env
 .env.local
 *.env.local
-tsconfig.tsbuildinfo
+.vercel/
+*.tsbuildinfo
 *.log
 .DS_Store
 .idea/
 .vscode/
 coverage/
 .cache/
-public/sw.js
-public/workbox-*
+**/public/sw.js
+**/public/workbox-*
 
 .github/java-upgrade/

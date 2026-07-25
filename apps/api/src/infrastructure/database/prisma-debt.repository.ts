@@ -136,7 +136,7 @@ export class PrismaDebtRepository implements IDebtRepository {
     const pendingDebts = allDebts.filter((d) => d.status === 'PENDING');
     const totalOwed = allDebts.reduce((s, d) => s + Number(d.amount), 0);
     const overdueAmount = overdueDebts.reduce((s, d) => s + Number(d.amount), 0);
-    const nextDue = pendingDebts[0] != null ? this.toDomain(pendingDebts[0]) : null;
+    const nextDue = pendingDebts[0] !== undefined ? this.toDomain(pendingDebts[0]) : null;
 
     return {
       totalOwed,
